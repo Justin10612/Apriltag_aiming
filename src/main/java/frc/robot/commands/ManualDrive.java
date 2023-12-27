@@ -33,17 +33,17 @@ public class ManualDrive extends CommandBase {
   @Override
   public void execute() {
     if(joystick.getRawButton(3) == true ){
-      if(limelightSubsystem.turn() == 0){
-        xSpeed = 0;
-        ySpeed = limelightSubsystem.yMove();
-        zSpeed = 0;
-      }
-      else{
-        xSpeed = 0;
-        ySpeed = 0;
-        zSpeed = limelightSubsystem.turn();
-      }
-      swerveSubsystem.drive(xSpeed, ySpeed, zSpeed, false);
+      // if(limelightSubsystem.turn() == 0){
+      //   xSpeed = 0;
+      //   ySpeed = limelightSubsystem.yMove();
+      //   zSpeed = 0;
+      // }
+      // else{
+      //   xSpeed = 0;
+      //   ySpeed = 0;
+      //   // zSpeed = limelightSubsystem.turn();
+      // }
+      // swerveSubsystem.drive(xSpeed, ySpeed, zSpeed, false);
     }
     else if(joystick.getRawButton(6) == true){
       xSpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(1), 0.08)*0.4;

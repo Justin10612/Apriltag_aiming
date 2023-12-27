@@ -28,8 +28,9 @@ public class LimeLightSubsystem extends SubsystemBase {
   // private final NetworkTableEntry ta = limeLight.getEntry("ta"); 
   // private final NetworkTableEntry _botPose = limeLight.getEntry("botpose");
   // private final NetworkTableEntry _cameraPose = limeLight.getEntry("targetpose_cameraspace");
-  private final PIDController yMovePID = new PIDController(0.018, 0, 0.001);
-  private final PIDController xMovePID = new PIDController(0, 0, 0);
+  private final PIDController yMovePID = new PIDController(0.75, 0, 0);
+  private final PIDController xMovePID = new PIDController(0.008, 0, 0);
+  private final PIDController turnPID = new PIDController(0.014, 0, 0);
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("photonvision/OV5647");
   DoubleArraySubscriber botPose3DGet = table.getDoubleArrayTopic("targetPose").subscribe(new double[] {0, 0, 0});
   List<PhotonTrackedTarget> targets = photonLimelight.getLatestResult().getTargets();
@@ -42,15 +43,28 @@ public class LimeLightSubsystem extends SubsystemBase {
   private double photonvisionZ;
   private Transform3d bot3D;
   private boolean turnRightState;
-  private double yMovePIDOutput, xMovePIDOutput;
+  private double yMovePIDOutput, xMovePIDOutput, turnPIDOutput;
   private final double maxXMovepPIDOutput = 0.3; 
   private final double maxYMovePIDOutput = 0.3;
+  private final double maxTurnPIDOutput = 0.5;
   private double[] botPoseValue;
   private double botX;
   private double botY;
   private double botZ;
 
   public LimeLightSubsystem() {
+  }
+
+  public double xMove(){
+    return xMovePIDOutput;
+  }
+
+  public double yMove(){
+    return yMovePIDOutput;
+  }
+
+  public double turn(){
+    return turnPIDOutput;
   }
 
   // public double xMove(){
@@ -88,10 +102,22 @@ public class LimeLightSubsystem extends SubsystemBase {
   public void periodic() {
     botPoseValue = botPose3DGet.get();
     if(photonLimelight.getLatestResult().hasTargets()){
-        botX = botPoseValue[0];
-        botY = botPoseValue[1];
-        botZ = botPoseValue[2];
+      botX = botPoseValue[0] * 100;
+      botY = botPoseValue[1];
+      botZ = photonLimelight.getLatestResult().getBestTarget().getYaw();
     }
+    else{
+      botX = 50;
+      botY = 0;
+      botZ = 0;
+    }
+    yMovePIDOutput = yMovePID.calculate(botY, 0);
+    xMovePIDOutput = xMovePID.calculate(botX, 50);
+    turnPIDOutput = turnPID.calculate(botZ, 0);
+
+    xMovePIDOutput = Constants.setMaxOutput(xMovePIDOutput, maxXMovepPIDOutput);
+    yMovePIDOutput = Constants.setMaxOutput(yMovePIDOutput, maxYMovePIDOutput);
+    turnPIDOutput = Constants.setMaxOutput(turnPIDOutput, maxTurnPIDOutput);
     
     // if(txValue > 10){
     //   turnRightState = true;
@@ -124,10 +150,14 @@ public class LimeLightSubsystem extends SubsystemBase {
     // SmartDashboard.putNumber("ty", tyValue);
     // SmartDashboard.putNumber("ta", taValue);
     // SmartDashboard.putNumber("distance", distance);
-    // SmartDashboard.putBoolean("turnRight", turnRightState);
-    SmartDashboard.putNumber("photonZ", botZ);
+    // SmartDashboard.putBoolean("turnRight", turnRightState); 
+    SmartDashboard.putNumber("Yaw", botZ);
     SmartDashboard.putNumber("photonY", botY);
     SmartDashboard.putNumber("photonX", botX);
+
+    SmartDashboard.putNumber("xMovePIDOutput", xMovePIDOutput);
+    SmartDashboard.putNumber("yMovePIDOutput", yMovePIDOutput);
+    SmartDashboard.putNumber("turn", turnPIDOutput);
 
     // This method will be called once per scheduler run
   }

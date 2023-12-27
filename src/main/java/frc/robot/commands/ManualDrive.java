@@ -32,31 +32,19 @@ public class ManualDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(joystick.getRawButton(3) == true ){
-      // if(limelightSubsystem.turn() == 0){
-      //   xSpeed = 0;
-      //   ySpeed = limelightSubsystem.yMove();
-      //   zSpeed = 0;
-      // }
-      // else{
-      //   xSpeed = 0;
-      //   ySpeed = 0;
-      //   // zSpeed = limelightSubsystem.turn();
-      // }
-      // swerveSubsystem.drive(xSpeed, ySpeed, zSpeed, false);
-    }
-    else if(joystick.getRawButton(6) == true){
-      xSpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(1), 0.08)*0.4;
-      ySpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(0), 0.08)*0.4;
-      zSpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(2), 0.08)*0.4;
-      swerveSubsystem.drive(xSpeed, ySpeed, zSpeed, true);
+    if(joystick.getRawButton(1) == true ){
+      xSpeed = limelightSubsystem.xMove();
+      ySpeed = limelightSubsystem.yMove();
+      zSpeed = limelightSubsystem.turn();
+      swerveSubsystem.drive(xSpeed, ySpeed, zSpeed, false);
     }
     else{
-      xSpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(1), 0.08)*0.9;
-      ySpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(0), 0.08)*0.9;
-      zSpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(2), 0.08)*0.9;
+      xSpeed = Constants.SwerveConstants.joysickValue(-joystick.getRawAxis(1), 0.08)*0.4;
+      ySpeed = Constants.SwerveConstants.joysickValue(joystick.getRawAxis(0), 0.08)*0.4;
+      zSpeed = Constants.SwerveConstants.joysickValue(joystick.getRawAxis(2), 0.08)*0.4;
       swerveSubsystem.drive(xSpeed, ySpeed, zSpeed, true);
     }
+
   }
 
   // Called once the command ends or is interrupted.

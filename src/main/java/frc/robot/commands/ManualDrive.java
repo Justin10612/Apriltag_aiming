@@ -35,7 +35,7 @@ public class ManualDrive extends CommandBase {
     if(joystick.getRawButton(1) == true ){
       xSpeed = limelightSubsystem.xMove();
       ySpeed = limelightSubsystem.yMove();
-      zSpeed = limelightSubsystem.turn();
+      zSpeed = 0;
       swerveSubsystem.drive(xSpeed, ySpeed, zSpeed, false);
     }
     else{

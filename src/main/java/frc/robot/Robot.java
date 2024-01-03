@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.net.PortUnreachableException;
+
 import com.revrobotics.REVPhysicsSim;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -31,6 +33,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     PortForwarder.add(1181, "photonvision.local", 1181);
+    
   }
 
   /**
@@ -47,6 +50,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    PortForwarder.remove(1181);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

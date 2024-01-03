@@ -4,17 +4,24 @@
 
 package frc.robot.subsystems;
 
-import java.util.List;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.channels.ByteChannel;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.common.dataflow.structures.Packet;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.vision.VisionPipeline;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -30,12 +37,9 @@ public class LimeLightSubsystem extends SubsystemBase {
   private final PIDController yMovePID = new PIDController(0.45, 0, 0);
   private final PIDController xMovePID = new PIDController(0.003, 0, 0);
   private final PIDController turnPID = new PIDController(0.014, 0, 0);
-  private Pose3d robotPose;
   private NetworkTable table = NetworkTableInstance.getDefault().getTable("photonvision/OV5647");
   private DoubleArraySubscriber botPose3DGet = table.getDoubleArrayTopic("targetPose").subscribe(new double[] {0, 0, 0});
-  private PhotonPipelineResult result = photonLimelight.getLatestResult();
-  private PhotonTrackedTarget target = result.getBestTarget();
-  private boolean hasTarget = result.hasTargets();
+
   // private double txValue;
   // private double tyValue;
   // private double taValue;
@@ -55,6 +59,7 @@ public class LimeLightSubsystem extends SubsystemBase {
   private double botZ;
 
   public LimeLightSubsystem() {
+    
   }
 
   public double xMove(){
@@ -102,9 +107,12 @@ public class LimeLightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    PhotonPipelineResult result = photonLimelight.getLatestResult();
+    PhotonTrackedTarget target = result.getBestTarget();
+    boolean hasTarget = result.hasTargets();
     botPoseValue = botPose3DGet.get();
     if(hasTarget){
-      botX = botPoseValue[0] * 100;
+      botX = botPoseValue[0];
       botY = botPoseValue[1];
       botZ = target.getYaw(); //photonLimelight.getLatestResult().getBestTarget().getYaw();
     }

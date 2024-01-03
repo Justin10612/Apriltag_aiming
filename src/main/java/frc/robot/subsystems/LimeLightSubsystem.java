@@ -114,7 +114,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     if(hasTarget){
       botX = botPoseValue[0];
       botY = botPoseValue[1];
-      botZ = target.getYaw(); //photonLimelight.getLatestResult().getBestTarget().getYaw();
+      botZ = Math.toDegrees(target.getBestCameraToTarget().getRotation().getAngle()); //photonLimelight.getLatestResult().getBestTarget().getYaw();
     }
     else{
       botX = 50;
@@ -123,7 +123,7 @@ public class LimeLightSubsystem extends SubsystemBase {
     }
     yMovePIDOutput = yMovePID.calculate(botY, 0);
     xMovePIDOutput = xMovePID.calculate(botX, 50);
-    turnPIDOutput = turnPID.calculate(botZ, 0);
+    turnPIDOutput = turnPID.calculate(botZ, 180);
 
     xMovePIDOutput = Constants.setMaxOutput(xMovePIDOutput, maxXMovepPIDOutput);
     yMovePIDOutput = Constants.setMaxOutput(yMovePIDOutput, maxYMovePIDOutput);
